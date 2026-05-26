@@ -1,0 +1,51 @@
+package main
+
+import (
+	"log"
+	"net/http"
+	"os"
+	"user-service/config"
+	handler "user-service/handlers"
+	customMiddleware "user-service/middleware"
+	repository "user-service/repositories"
+	service "user-service/services"
+
+	"github.com/joho/godotenv"
+	echojwt "github.com/labstack/echo-jwt/v4"
+	"github.com/labstack/echo/v4"
+)
+
+func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println(".env file not found, using system environment")
+	}
+
+	db := config.ConnectDB()
+
+	userRepo := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepo)
+	userHandler := handler.NewUserHandler(userService)
+
+	e := echo.New()
+
+	e.GET("/test", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, echo.Map{
+			"message": "user service is running",
+		})
+	})
+
+	e.POST("/register", userHandler.Register)
+	e.POST("/login", userHandler.Login)
+
+	protected := e.Group("")
+	protected.Use(echojwt.WithConfig(customMiddleware.JWTMiddleware()))
+	protected.GET("/profile", userHandler.Profile)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	e.Logger.Fatal(e.Start(":" + port))
+}
