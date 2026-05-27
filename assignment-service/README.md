@@ -83,9 +83,13 @@ curl http://localhost:8083/health
 | MONGO_URI      | mongodb://localhost:27017    | MongoDB connection URI           |
 | MONGO_DB       | assignment_db                | MongoDB database name           |
 | JWT_SECRET     | —                            | Shared secret with user-service |
+| REDIS_URL      | (empty)                      | Redis.io URL, e.g. `rediss://...` |
 | REDIS_ADDR     | localhost:6379               | Redis address                   |
+| REDIS_USERNAME | (empty)                      | Redis username, e.g. `default`   |
 | REDIS_PASSWORD | (empty)                      | Redis password (if any)         |
 | REDIS_DB       | 0                            | Redis logical database          |
+
+If `REDIS_URL` is set, the service uses that connection string and ignores `REDIS_ADDR`, `REDIS_USERNAME`, `REDIS_PASSWORD`, and `REDIS_DB`.
 
 ---
 

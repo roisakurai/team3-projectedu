@@ -13,16 +13,14 @@ type Config struct {
 	MongoURI      string
 	MongoDB       string
 	JWTSecret     string
-	RedisURL      string
 	RedisAddr     string
-	RedisUsername string
 	RedisPassword string
 	RedisDB       int
 }
 
 func Load() *Config {
 	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found, reading from environment variables")
+		log.Println("No .env file found, loading from environment")
 	}
 
 	redisDB, err := strconv.Atoi(getEnv("REDIS_DB", "0"))
@@ -31,13 +29,11 @@ func Load() *Config {
 	}
 
 	return &Config{
-		AppPort:       getEnv("APP_PORT", "8083"),
+		AppPort:       getEnv("APP_PORT", "8085"),
 		MongoURI:      getEnv("MONGO_URI", "mongodb://localhost:27017"),
-		MongoDB:       getEnv("MONGO_DB", "assignment_db"),
+		MongoDB:       getEnv("MONGO_DB", "progress_db"),
 		JWTSecret:     getEnv("JWT_SECRET", "secret"),
-		RedisURL:      getEnv("REDIS_URL", ""),
 		RedisAddr:     getEnv("REDIS_ADDR", "localhost:6379"),
-		RedisUsername: getEnv("REDIS_USERNAME", ""),
 		RedisPassword: getEnv("REDIS_PASSWORD", ""),
 		RedisDB:       redisDB,
 	}

@@ -47,7 +47,7 @@ func main() {
 	db := mongoClient.Database(cfg.MongoDB)
 
 	// ── Redis ────────────────────────────────────────────────────────────────
-	publisher, err := redis.NewPublisher(cfg.RedisAddr, cfg.RedisPassword, cfg.RedisDB)
+	publisher, err := redis.NewPublisher(cfg.RedisURL, cfg.RedisAddr, cfg.RedisUsername, cfg.RedisPassword, cfg.RedisDB)
 	if err != nil {
 		log.Fatalf("failed to connect to Redis: %v", err)
 	}

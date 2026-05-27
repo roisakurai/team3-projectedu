@@ -15,12 +15,23 @@ type Publisher struct {
 }
 
 // NewPublisher creates a Publisher and verifies connectivity.
-func NewPublisher(addr, password string, db int) (*Publisher, error) {
-	client := redis.NewClient(&redis.Options{
-		Addr:     addr,
-		Password: password,
-		DB:       db,
-	})
+func NewPublisher(redisURL, addr, username, password string, db int) (*Publisher, error) {
+	var client *redis.Client
+
+	if redisURL != "" {
+		opts, err := redis.ParseURL(redisURL)
+		if err != nil {
+			return nil, err
+		}
+		client = redis.NewClient(opts)
+	} else {
+		client = redis.NewClient(&redis.Options{
+			Addr:     addr,
+			Username: username,
+			Password: password,
+			DB:       db,
+		})
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
