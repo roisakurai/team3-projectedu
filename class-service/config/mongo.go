@@ -22,7 +22,7 @@ func ConnectDB() {
 		log.Fatal(err)
 	}
 
-	DB = client.Database(os.Getenv("DB_NAME"))
+	DB = client.Database(os.Getenv("MONGO_DB"))
 
 	log.Println("MongoDB Connected")
 }

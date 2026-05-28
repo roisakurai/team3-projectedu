@@ -7,6 +7,7 @@ import (
 	"phase3/finalproject/class_service-melvin/utils"
 
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,6 +28,22 @@ func CreateClass(c *gin.Context) {
 	}
 
 	class.TeacherID = c.MustGet("user_id").(string)
+
+	// ensure students slice is initialized and timestamps/count set
+	class.Students = []models.Student{}
+	class.StudentCount = 0
+	class.CreatedAt = time.Now()
+
+	// try to fetch full profile from user-service to sync teacher name
+	if rawTokenIfc, exists := c.Get("raw_token"); exists {
+		if rawToken, ok := rawTokenIfc.(string); ok && rawToken != "" {
+			if profile, err := services.GetUserProfile(rawToken); err == nil {
+				if name, ok := profile["name"].(string); ok {
+					class.TeacherName = name
+				}
+			}
+		}
+	}
 
 	err := services.CreateClass(class)
 
