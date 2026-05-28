@@ -11,6 +11,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateClass godoc
+// @Summary Create class
+// @Description Teacher creates class
+// @Tags Classes
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Param request body models.Class true "Class Data"
+// @Success 201 {object} map[string]interface{}
+// @Router /classes [post]
 func CreateClass(c *gin.Context) {
 	var class models.Class
 
@@ -43,6 +53,13 @@ func CreateClass(c *gin.Context) {
 	)
 }
 
+// GetAllClasses godoc
+// @Summary Get all classes
+// @Tags Classes
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {object} map[string]interface{}
+// @Router /classes [get]
 func GetAllClasses(c *gin.Context) {
 	classes, err := repositories.GetAllClasses()
 
@@ -59,6 +76,15 @@ func GetAllClasses(c *gin.Context) {
 	)
 }
 
+// JoinClass godoc
+// @Summary Student join class
+// @Tags Classes
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Param request body models.JoinClassRequest true "Join Class"
+// @Success 200 {object} map[string]interface{}
+// @Router /classes/join [post]
 func JoinClass(c *gin.Context) {
 	var req models.JoinClassRequest
 
@@ -95,6 +121,14 @@ func JoinClass(c *gin.Context) {
 	)
 }
 
+// GetStudentsByClass godoc
+// @Summary Get students by class
+// @Tags Classes
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Param id path string true "Class ID"
+// @Success 200 {object} map[string]interface{}
+// @Router /classes/{id}/students [get]
 func GetStudentsByClass(c *gin.Context) {
 	id := c.Param("id")
 
