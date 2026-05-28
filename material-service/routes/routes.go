@@ -13,6 +13,7 @@ func SetupRoutes(r *gin.Engine) {
 	auth.Use(middleware.JWTMiddleware())
 
 	auth.POST("/materials", handlers.CreateMaterial)
-
+	r.GET("/materials/class/:class_id", handlers.GetMaterialsByClass)
 	r.GET("/materials", handlers.GetAllMaterials)
+	auth.PUT("/materials/:id/read", handlers.MarkMaterialAsRead)
 }

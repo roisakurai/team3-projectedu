@@ -7,6 +7,7 @@ import (
 	"phase3/finalproject/material_service-melvin/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func CreateMaterial(material models.Material) error {
@@ -33,15 +34,45 @@ func GetAllMaterials() ([]models.Material, error) {
 	return materials, err
 }
 
-func FindMaterialByJoinCode(code string) (*models.Material, error) {
+func GetMaterialsByClass(classID string) ([]models.Material, error) {
 	collection := config.DB.Collection("materials")
 
-	var material models.Material
-
-	err := collection.FindOne(
+	cursor, err := collection.Find(
 		context.Background(),
-		bson.M{"join_code": code},
-	).Decode(&material)
+		bson.M{"class_id": classID},
+	)
 
-	return &material, err
+	if err != nil {
+		return nil, err
+	}
+
+	var materials []models.Material
+
+	err = cursor.All(context.Background(), &materials)
+
+	return materials, err
+}
+
+func MarkMaterialAsRead(materialID string, studentID string) error {
+	collection := config.DB.Collection("materials")
+
+	objectID, err := primitive.ObjectIDFromHex(materialID)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = collection.UpdateOne(
+		context.Background(),
+		bson.M{
+			"_id": objectID,
+		},
+		bson.M{
+			"$addToSet": bson.M{
+				"read_by": studentID,
+			},
+		},
+	)
+
+	return err
 }
