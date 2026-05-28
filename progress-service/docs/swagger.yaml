@@ -1,0 +1,120 @@
+info:
+  contact: {}
+paths:
+  /api/v1/progress/class/{class_id}:
+    get:
+      parameters:
+      - description: Class ID
+        in: path
+        name: class_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get class progress
+      tags:
+      - Progress
+  /api/v1/progress/class/{class_id}/student/{student_id}:
+    get:
+      parameters:
+      - description: Class ID
+        in: path
+        name: class_id
+        required: true
+        type: string
+      - description: Student ID
+        in: path
+        name: student_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get student class progress
+      tags:
+      - Progress
+  /api/v1/progress/me:
+    get:
+      description: Get logged in student progress
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get my progress
+      tags:
+      - Progress
+  /api/v1/progress/me/class/{class_id}:
+    get:
+      description: Get student progress in specific class
+      parameters:
+      - description: Class ID
+        in: path
+        name: class_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get my class progress
+      tags:
+      - Progress
+  /api/v1/progress/me/dashboard:
+    get:
+      description: Get dashboard summary for logged in student
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get student dashboard
+      tags:
+      - Progress
+  /api/v1/progress/summary:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get platform summary
+      tags:
+      - Progress
+swagger: "2.0"

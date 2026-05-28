@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  progress-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: progress-service
+    ports:
+      - "${APP_PORT:-8085}:8085"
+    env_file:
+      - .env
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+      - REDIS_ADDR=redis:6379
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - lms-network
+
+  mongodb:
+    image: mongo:7
+    container_name: progress-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      - lms-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: progress-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - lms-network
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  lms-network:
+    driver: bridge
