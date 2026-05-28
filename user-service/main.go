@@ -24,7 +24,8 @@ func main() {
 	db := config.ConnectDB()
 
 	userRepo := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepo)
+	emailService := service.NewEmailService()
+	userService := service.NewUserService(userRepo, emailService)
 	userHandler := handler.NewUserHandler(userService)
 
 	e := echo.New()
@@ -37,6 +38,7 @@ func main() {
 
 	e.POST("/register", userHandler.Register)
 	e.POST("/login", userHandler.Login)
+	e.GET("/verify-email/:token", userHandler.VerifyEmail)
 
 	protected := e.Group("")
 	protected.Use(echojwt.WithConfig(customMiddleware.JWTMiddleware()))

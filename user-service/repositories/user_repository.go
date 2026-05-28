@@ -55,3 +55,24 @@ func (r *UserRepository) FindByID(id string) (*model.User, error) {
 
 	return &user, nil
 }
+
+func (r *UserRepository) VerifyUser(userID string) error {
+	objectID, err := bson.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.Collection.UpdateOne(
+		context.Background(),
+		bson.M{
+			"_id": objectID,
+		},
+		bson.M{
+			"$set": bson.M{
+				"is_verified": true,
+			},
+		},
+	)
+
+	return err
+}
