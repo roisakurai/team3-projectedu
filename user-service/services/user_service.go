@@ -2,21 +2,28 @@ package service
 
 import (
 	"errors"
+	"fmt"
+	"os"
 	"time"
 	"user-service/helper"
 	model "user-service/models"
 	repository "user-service/repositories"
 
+	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
-	Repo *repository.UserRepository
+	Repo         *repository.UserRepository
+	EmailService *EmailService
 }
 
-func NewUserService(repo *repository.UserRepository) *UserService {
-	return &UserService{Repo: repo}
+func NewUserService(repo *repository.UserRepository, emailService *EmailService) *UserService {
+	return &UserService{
+		Repo:         repo,
+		EmailService: emailService,
+	}
 }
 
 func (s *UserService) Register(req model.RegisterRequest) error {
@@ -39,15 +46,40 @@ func (s *UserService) Register(req model.RegisterRequest) error {
 	}
 
 	user := model.User{
-		ID:        bson.NewObjectID(),
-		Name:      req.Name,
-		Email:     req.Email,
-		Password:  string(hashedPassword),
-		Role:      req.Role,
-		CreatedAt: time.Now(),
+		ID:         bson.NewObjectID(),
+		Name:       req.Name,
+		Email:      req.Email,
+		Password:   string(hashedPassword),
+		Role:       req.Role,
+		IsVerified: false,
+		CreatedAt:  time.Now(),
 	}
 
-	return s.Repo.Create(user)
+	err = s.Repo.Create(user)
+	if err != nil {
+		return err
+	}
+
+	verificationToken, err := helper.GenerateVerificationToken(
+		user.ID.Hex(),
+		user.Email,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.EmailService.SendVerificationEmail(
+		user.Email,
+		user.Name,
+		verificationToken,
+	)
+
+	if err != nil {
+		fmt.Println("failed to send verification email:", err)
+	}
+
+	return nil
 }
 
 func (s *UserService) Login(req model.LoginRequest) (string, error) {
@@ -66,9 +98,29 @@ func (s *UserService) Login(req model.LoginRequest) (string, error) {
 		return "", err
 	}
 
+	if !user.IsVerified {
+		return "", errors.New("please verify your email first")
+	}
+
 	return token, nil
 }
 
 func (s *UserService) GetProfile(userID string) (*model.User, error) {
 	return s.Repo.FindByID(userID)
+}
+
+func (s *UserService) VerifyEmail(tokenString string) error {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+
+	if err != nil || !token.Valid {
+		return errors.New("invalid or expired token")
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	userID := claims["user_id"].(string)
+
+	return s.Repo.VerifyUser(userID)
 }

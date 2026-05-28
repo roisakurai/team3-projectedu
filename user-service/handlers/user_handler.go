@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	model "user-service/models"
 	service "user-service/services"
@@ -41,9 +42,18 @@ func (h *UserHandler) Register(c echo.Context) error {
 func (h *UserHandler) Login(c echo.Context) error {
 	var req model.LoginRequest
 
-	if err := c.Bind(&req); err != nil {
+	decoder := json.NewDecoder(c.Request().Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"message": "invalid request body",
+		})
+	}
+
+	if req.Email == "" || req.Password == "" {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "email and password are required",
 		})
 	}
 
@@ -76,5 +86,20 @@ func (h *UserHandler) Profile(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "profile retrieved successfully",
 		"data":    user,
+	})
+}
+
+func (h *UserHandler) VerifyEmail(c echo.Context) error {
+	token := c.Param("token")
+
+	err := h.Service.VerifyEmail(token)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "email verified successfully",
 	})
 }

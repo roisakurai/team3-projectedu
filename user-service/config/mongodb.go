@@ -14,16 +14,19 @@ func ConnectDB() *mongo.Database {
 	uri := os.Getenv("MONGO_URI")
 	dbName := os.Getenv("DB_NAME")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(options.Client().ApplyURI(uri))
+	clientOptions := options.Client().
+		ApplyURI(uri).
+		SetServerSelectionTimeout(30 * time.Second)
+
+	client, err := mongo.Connect(clientOptions)
 	if err != nil {
 		log.Fatal("failed to connect MongoDB:", err)
 	}
 
-	err = client.Ping(ctx, nil)
-	if err != nil {
+	if err := client.Ping(ctx, nil); err != nil {
 		log.Fatal("failed to ping MongoDB:", err)
 	}
 
