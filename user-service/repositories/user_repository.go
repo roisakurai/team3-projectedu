@@ -76,3 +76,32 @@ func (r *UserRepository) VerifyUser(userID string) error {
 
 	return err
 }
+
+func (r *UserRepository) UpdateByID(id string, updateData bson.M) error {
+	objectID, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.Collection.UpdateOne(
+		context.Background(),
+		bson.M{"_id": objectID},
+		bson.M{"$set": updateData},
+	)
+
+	return err
+}
+
+func (r *UserRepository) DeleteByID(id string) error {
+	objectID, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.Collection.DeleteOne(
+		context.Background(),
+		bson.M{"_id": objectID},
+	)
+
+	return err
+}

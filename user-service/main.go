@@ -43,6 +43,8 @@ func main() {
 	protected := e.Group("")
 	protected.Use(echojwt.WithConfig(customMiddleware.JWTMiddleware()))
 	protected.GET("/profile", userHandler.Profile)
+	protected.PUT("/users/:id", userHandler.UpdateUser)
+	protected.DELETE("/users/:id", userHandler.DeleteUser)
 
 	port := os.Getenv("PORT")
 	if port == "" {

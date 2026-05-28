@@ -103,3 +103,53 @@ func (h *UserHandler) VerifyEmail(c echo.Context) error {
 		"message": "email verified successfully",
 	})
 }
+
+func (h *UserHandler) UpdateUser(c echo.Context) error {
+	targetUserID := c.Param("id")
+
+	token := c.Get("user").(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+
+	requesterID := claims["user_id"].(string)
+	requesterRole := claims["role"].(string)
+
+	var req model.UpdateUserRequest
+
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "invalid request body",
+		})
+	}
+
+	err := h.Service.UpdateUser(targetUserID, requesterID, requesterRole, req)
+	if err != nil {
+		return c.JSON(http.StatusForbidden, echo.Map{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "user updated successfully",
+	})
+}
+
+func (h *UserHandler) DeleteUser(c echo.Context) error {
+	targetUserID := c.Param("id")
+
+	token := c.Get("user").(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+
+	requesterID := claims["user_id"].(string)
+	requesterRole := claims["role"].(string)
+
+	err := h.Service.DeleteUser(targetUserID, requesterID, requesterRole)
+	if err != nil {
+		return c.JSON(http.StatusForbidden, echo.Map{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "user deleted successfully",
+	})
+}

@@ -124,3 +124,81 @@ func (s *UserService) VerifyEmail(tokenString string) error {
 
 	return s.Repo.VerifyUser(userID)
 }
+
+func (s *UserService) UpdateUser(
+	targetUserID string,
+	requesterID string,
+	requesterRole string,
+	req model.UpdateUserRequest,
+) error {
+	targetUser, err := s.Repo.FindByID(targetUserID)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	if requesterRole != "admin" && requesterID != targetUserID {
+		return errors.New("you can only update your own account")
+	}
+
+	if requesterRole == "admin" && targetUser.Role == "admin" && requesterID != targetUserID {
+		return errors.New("admin cannot update another admin")
+	}
+
+	updateData := bson.M{}
+
+	if req.Name != "" {
+		updateData["name"] = req.Name
+	}
+
+	if req.Email != "" {
+		updateData["email"] = req.Email
+	}
+
+	if req.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+
+		updateData["password"] = string(hashedPassword)
+	}
+
+	if req.Role != "" {
+		if requesterRole != "admin" {
+			return errors.New("only admin can update role")
+		}
+
+		if req.Role != "student" && req.Role != "teacher" {
+			return errors.New("admin can only set role to student or teacher")
+		}
+
+		updateData["role"] = req.Role
+	}
+
+	if len(updateData) == 0 {
+		return errors.New("no data to update")
+	}
+
+	return s.Repo.UpdateByID(targetUserID, updateData)
+}
+
+func (s *UserService) DeleteUser(
+	targetUserID string,
+	requesterID string,
+	requesterRole string,
+) error {
+	targetUser, err := s.Repo.FindByID(targetUserID)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	if requesterRole != "admin" && requesterID != targetUserID {
+		return errors.New("you can only delete your own account")
+	}
+
+	if requesterRole == "admin" && targetUser.Role == "admin" && requesterID != targetUserID {
+		return errors.New("admin cannot delete another admin")
+	}
+
+	return s.Repo.DeleteByID(targetUserID)
+}
