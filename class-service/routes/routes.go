@@ -15,4 +15,6 @@ func SetupRoutes(r *gin.Engine) {
 	auth.POST("/classes", handlers.CreateClass)
 	auth.GET("/classes", handlers.GetAllClasses)
 	auth.POST("/classes/join", handlers.JoinClass)
+
+	auth.GET("/classes/:id/students", handlers.GetStudentsByClass)
 }

@@ -87,6 +87,28 @@ func JoinClass(c *gin.Context) {
 		c,
 		http.StatusOK,
 		"Joined class successfully",
-		nil,
+		gin.H{
+			"student_id": studentID,
+			"name":       "Melvin Student",
+			"join_code":  req.JoinCode,
+		},
+	)
+}
+
+func GetStudentsByClass(c *gin.Context) {
+	id := c.Param("id")
+
+	class, err := repositories.FindClassByID(id)
+
+	if err != nil {
+		utils.InternalServerError(c, err.Error())
+		return
+	}
+
+	utils.SuccessResponse(
+		c,
+		http.StatusOK,
+		"Success get students by class",
+		class.Students,
 	)
 }
