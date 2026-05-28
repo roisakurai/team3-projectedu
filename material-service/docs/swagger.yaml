@@ -1,0 +1,141 @@
+basePath: /
+definitions:
+  models.Material:
+    properties:
+      class_id:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      read_by:
+        items:
+          type: string
+        type: array
+      teacher_id:
+        type: string
+      title:
+        type: string
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  description: API for managing learning materials
+  title: Material Service API
+  version: "1.0"
+paths:
+  /materials:
+    get:
+      description: Get all learning materials
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all materials
+      tags:
+      - Materials
+    post:
+      consumes:
+      - application/json
+      description: Teacher creates learning material
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Material Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Material'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create material
+      tags:
+      - Materials
+  /materials/{id}/read:
+    put:
+      consumes:
+      - application/json
+      description: Student marks material as read
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Material ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Mark material as read
+      tags:
+      - Materials
+  /materials/class/{class_id}:
+    get:
+      description: Get materials by class ID
+      parameters:
+      - description: Class ID
+        in: path
+        name: class_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get materials by class
+      tags:
+      - Materials
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
