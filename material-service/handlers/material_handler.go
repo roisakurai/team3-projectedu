@@ -19,17 +19,14 @@ func CreateMaterial(c *gin.Context) {
 		return
 	}
 
-	// role := c.MustGet("role").(string)
+	role := c.MustGet("role").(string)
 
-	// if role != "teacher" {
-	// 	utils.ErrorResponse(c, http.StatusForbidden, "only teacher can create material")
-	// 	return
-	// }
+	if role != "teacher" {
+		utils.ErrorResponse(c, http.StatusForbidden, "only teacher can create material")
+		return
+	}
 
-	// material.TeacherID = c.MustGet("user_id").(string)
-
-	material.TeacherID = "teacher123"
-	// sementara
+	material.TeacherID = c.MustGet("user_id").(string)
 
 	err := services.CreateMaterial(material)
 
