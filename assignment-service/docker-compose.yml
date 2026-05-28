@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  assignment-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: assignment-service
+    ports:
+      - "${APP_PORT:-8083}:${APP_PORT:-8083}"
+    env_file:
+      - .env
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+      - REDIS_ADDR=redis:6379
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - lms-network
+
+  mongodb:
+    image: mongo:7
+    container_name: assignment-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      - lms-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: assignment-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - lms-network
+
+volumes:
+  mongo-data:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  lms-network:
+    driver: bridge
