@@ -11,3 +11,7 @@ func CreateMaterial(material models.Material) error {
 
 	return repositories.CreateMaterial(material)
 }
+
+func MarkMaterialAsRead(materialID string, studentID string) error {
+	return repositories.MarkMaterialAsRead(materialID, studentID)
+}
