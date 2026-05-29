@@ -3,8 +3,10 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
+	"assignment-service/clients"
 	"assignment-service/models"
 	redispkg "assignment-service/pkg/redis"
 	"assignment-service/repositories"
@@ -22,7 +24,7 @@ var (
 
 // AssignmentService defines the business-logic interface.
 type AssignmentService interface {
-	CreateAssignment(ctx context.Context, req *models.CreateAssignmentRequest, teacherID string) (*models.Assignment, error)
+	CreateAssignment(ctx context.Context, req *models.CreateAssignmentRequest, teacherID string, token string) (*models.Assignment, error)
 	GetAssignment(ctx context.Context, id string) (*models.Assignment, error)
 	ListAssignments(ctx context.Context, classID string) ([]*models.Assignment, error)
 	UpdateAssignment(ctx context.Context, id string, req *models.UpdateAssignmentRequest, teacherID string) (*models.Assignment, error)
@@ -35,21 +37,23 @@ type AssignmentService interface {
 }
 
 type assignmentService struct {
-	repo      repositories.AssignmentRepository
-	publisher *redispkg.Publisher
+	repo        repositories.AssignmentRepository
+	publisher   *redispkg.Publisher
+	classClient *clients.ClassClient
 }
 
 // NewAssignmentService creates a service with the given repository and Redis publisher.
 func NewAssignmentService(repo repositories.AssignmentRepository, publisher *redispkg.Publisher) AssignmentService {
 	return &assignmentService{
-		repo:      repo,
-		publisher: publisher,
+		repo:        repo,
+		publisher:   publisher,
+		classClient: clients.NewClassClient(),
 	}
 }
 
 // ── Assignment CRUD ───────────────────────────────────────────────────────────
 
-func (s *assignmentService) CreateAssignment(ctx context.Context, req *models.CreateAssignmentRequest, teacherID string) (*models.Assignment, error) {
+func (s *assignmentService) CreateAssignment(ctx context.Context, req *models.CreateAssignmentRequest, teacherID string, token string) (*models.Assignment, error) {
 	a := &models.Assignment{
 		ClassID:     req.ClassID,
 		TeacherID:   teacherID,
@@ -64,14 +68,26 @@ func (s *assignmentService) CreateAssignment(ctx context.Context, req *models.Cr
 	}
 
 	// Publish event - errors are logged inside publisher, not propagated.
+	recipients, className, err := s.classClient.GetStudentsByClassID(ctx, a.ClassID, token)
+	if err != nil {
+		fmt.Println("failed to get class students for notification:", err)
+	}
+
+	if className == "" {
+		className = a.ClassID
+	}
+
 	s.publisher.PublishAssignmentCreated(ctx, redispkg.AssignmentCreatedEvent{
-		Event:        "ASSIGNMENT_CREATED",
-		AssignmentID: a.ID.Hex(),
-		ClassID:      a.ClassID,
-		Title:        a.Title,
-		Deadline:     a.Deadline.Format(time.RFC3339),
-		TeacherID:    teacherID,
-		Timestamp:    time.Now().UTC().Format(time.RFC3339),
+		Event:           "ASSIGNMENT_CREATED",
+		AssignmentID:    a.ID.Hex(),
+		ClassID:         a.ClassID,
+		ClassName:       className,
+		Title:           a.Title,
+		AssignmentTitle: a.Title,
+		Deadline:        a.Deadline.Format(time.RFC3339),
+		TeacherID:       teacherID,
+		Recipients:      recipients,
+		Timestamp:       time.Now().UTC().Format(time.RFC3339),
 	})
 
 	return a, nil

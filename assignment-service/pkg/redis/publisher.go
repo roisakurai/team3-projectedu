@@ -48,15 +48,24 @@ func (p *Publisher) Close() error {
 	return p.client.Close()
 }
 
+type NotificationRecipient struct {
+	UserID string `json:"user_id"`
+	Email  string `json:"email"`
+	Name   string `json:"name"`
+}
+
 // AssignmentCreatedEvent is published when a new assignment is created.
 type AssignmentCreatedEvent struct {
-	Event        string `json:"event"`
-	AssignmentID string `json:"assignment_id"`
-	ClassID      string `json:"class_id"`
-	Title        string `json:"title"`
-	Deadline     string `json:"deadline"`
-	TeacherID    string `json:"teacher_id"`
-	Timestamp    string `json:"timestamp"`
+	Event           string                  `json:"event"`
+	AssignmentID    string                  `json:"assignment_id"`
+	ClassID         string                  `json:"class_id"`
+	ClassName       string                  `json:"class_name"`
+	AssignmentTitle string                  `json:"assignment_title"`
+	Title           string                  `json:"title"`
+	Deadline        string                  `json:"deadline"`
+	TeacherID       string                  `json:"teacher_id"`
+	Recipients      []NotificationRecipient `json:"recipients"`
+	Timestamp       string                  `json:"timestamp"`
 }
 
 // AssignmentSubmittedEvent is published when a student submits an assignment.

@@ -93,7 +93,15 @@ func JoinClass(c *gin.Context) {
 
 	studentID := c.MustGet("user_id").(string)
 
-	err := services.JoinClass(req.JoinCode, studentID)
+	rawToken := ""
+
+	if rawTokenIfc, exists := c.Get("raw_token"); exists {
+		if token, ok := rawTokenIfc.(string); ok {
+			rawToken = token
+		}
+	}
+
+	err := services.JoinClass(req.JoinCode, studentID, rawToken)
 
 	if err != nil {
 		utils.InternalServerError(c, err.Error())
@@ -116,16 +124,29 @@ func GetStudentsByClass(c *gin.Context) {
 	id := c.Param("id")
 
 	class, err := repositories.FindClassByID(id)
-
 	if err != nil {
 		utils.InternalServerError(c, err.Error())
 		return
+	}
+
+	recipients := []gin.H{}
+
+	for _, student := range class.Students {
+		recipients = append(recipients, gin.H{
+			"user_id": student.StudentID,
+			"email":   student.Email,
+			"name":    student.Name,
+		})
 	}
 
 	utils.SuccessResponse(
 		c,
 		http.StatusOK,
 		"Success get students by class",
-		class.Students,
+		gin.H{
+			"class_id":   class.ID.Hex(),
+			"class_name": class.Name,
+			"students":   recipients,
+		},
 	)
 }

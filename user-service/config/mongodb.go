@@ -12,7 +12,7 @@ import (
 
 func ConnectDB() *mongo.Database {
 	uri := os.Getenv("MONGO_URI")
-	dbName := os.Getenv("DB_NAME")
+	dbName := os.Getenv("MONGO_DB")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()

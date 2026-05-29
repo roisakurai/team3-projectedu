@@ -31,7 +31,7 @@ func Load() *Config {
 	}
 
 	return &Config{
-		AppPort:       getEnv("APP_PORT", "8085"),
+		AppPort:       getEnv("APP_PORT", "8082"),
 		MongoURI:      getEnv("MONGO_URI", "mongodb://localhost:27017"),
 		MongoDB:       getEnv("MONGO_DB", "progress_db"),
 		JWTSecret:     getEnv("JWT_SECRET", "secret"),

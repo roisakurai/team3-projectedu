@@ -46,6 +46,11 @@ func userID(c echo.Context) string {
 	return v
 }
 
+func rawToken(c echo.Context) string {
+	authHeader := c.Request().Header.Get("Authorization")
+	return authHeader
+}
+
 func handleServiceError(c echo.Context, err error) error {
 	switch {
 	case errors.Is(err, services.ErrNotFound):
@@ -71,7 +76,7 @@ func (h *AssignmentHandler) CreateAssignment(c echo.Context) error {
 		return utils.BadRequest(c, err.Error())
 	}
 
-	assignment, err := h.svc.CreateAssignment(c.Request().Context(), &req, userID(c))
+	assignment, err := h.svc.CreateAssignment(c.Request().Context(), &req, userID(c), rawToken(c))
 	if err != nil {
 		return handleServiceError(c, err)
 	}

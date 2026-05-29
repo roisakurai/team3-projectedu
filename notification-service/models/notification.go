@@ -22,3 +22,12 @@ type CreateNotificationRequest struct {
 	Message string   `json:"message"`
 	Type    string   `json:"type"`
 }
+
+type CreateEmailNotificationRequest struct {
+	UserID  string `json:"user_id"`
+	Email   string `json:"email"`
+	Name    string `json:"name"`
+	Title   string `json:"title"`
+	Message string `json:"message"`
+	Type    string `json:"type"`
+}

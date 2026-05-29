@@ -84,7 +84,7 @@ func (s *EmailService) SendVerificationEmail(
 	fromName := os.Getenv("SENDGRID_FROM_NAME")
 
 	verificationLink := fmt.Sprintf(
-		"http://localhost:8080/verify-email/%s",
+		"http://localhost:8081/verify-email/%s",
 		token,
 	)
 

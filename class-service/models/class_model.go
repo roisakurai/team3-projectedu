@@ -8,6 +8,8 @@ import (
 
 type Student struct {
 	StudentID string    `json:"student_id" bson:"student_id"`
+	Name      string    `json:"name" bson:"name"`
+	Email     string    `json:"email" bson:"email"`
 	JoinedAt  time.Time `json:"joined_at" bson:"joined_at"`
 }
 

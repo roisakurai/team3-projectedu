@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	middlewares "notification-service/middleware"
 	"notification-service/models"
 	"notification-service/services"
 
@@ -65,4 +66,37 @@ func (h *NotificationHandler) MarkAsRead(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "notification marked as read",
 	})
+}
+
+func (h *NotificationHandler) CreateAndSendEmail(c echo.Context) error {
+	var req models.CreateEmailNotificationRequest
+
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "invalid request body",
+		})
+	}
+
+	if err := h.Service.CreateAndSendEmail(req); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusCreated, echo.Map{
+		"message": "notification created and email sent",
+	})
+}
+
+func (h *NotificationHandler) GetMyNotifications(c echo.Context) error {
+	userID := middlewares.GetUserID(c)
+
+	notifications, err := h.Service.GetByUserID(userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, notifications)
 }
