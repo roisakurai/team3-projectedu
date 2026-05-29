@@ -11,6 +11,7 @@ import (
 
 	"progress-service/config"
 	"progress-service/consumer"
+	_ "progress-service/docs"
 	"progress-service/handler"
 	appMiddleware "progress-service/middleware"
 	redispkg "progress-service/pkg/redis"
@@ -19,6 +20,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -87,6 +89,9 @@ func main() {
 	e.GET("/health", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]string{"status": "ok"})
 	})
+
+	// Swagger docs
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	// API routes
 	api := e.Group("/api/v1")
