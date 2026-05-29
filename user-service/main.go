@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"user-service/config"
+	_ "user-service/docs"
 	handler "user-service/handlers"
 	customMiddleware "user-service/middleware"
 	repository "user-service/repositories"
@@ -13,6 +14,7 @@ import (
 	"github.com/joho/godotenv"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func main() {
@@ -35,6 +37,9 @@ func main() {
 			"message": "user service is running",
 		})
 	})
+
+	// Swagger docs
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.POST("/register", userHandler.Register)
 	e.POST("/login", userHandler.Login)

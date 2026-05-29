@@ -11,7 +11,7 @@ import (
 	redispkg "assignment-service/pkg/redis"
 	"assignment-service/repositories"
 
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 var (

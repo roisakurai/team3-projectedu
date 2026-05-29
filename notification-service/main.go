@@ -8,6 +8,7 @@ import (
 
 	"notification-service/config"
 	"notification-service/consumers"
+	_ "notification-service/docs"
 	"notification-service/handlers"
 	middlewares "notification-service/middleware"
 	"notification-service/repositories"
@@ -17,6 +18,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func main() {
@@ -44,6 +46,9 @@ func main() {
 			"message": "notification service is running",
 		})
 	})
+
+	// Swagger docs
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.POST("/notifications", notificationHandler.Create)
 	e.POST("/notifications/email", notificationHandler.CreateAndSendEmail)

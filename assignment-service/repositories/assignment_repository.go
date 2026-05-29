@@ -7,10 +7,9 @@ import (
 
 	"assignment-service/models"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 var (
@@ -104,7 +103,7 @@ func (r *mongoRepository) ensureIndexes(ctx context.Context) error {
 // ── Assignment methods ────────────────────────────────────────────────────────
 
 func (r *mongoRepository) CreateAssignment(ctx context.Context, a *models.Assignment) error {
-	a.ID = primitive.NewObjectID()
+	a.ID = bson.NewObjectID()
 	now := time.Now().UTC()
 	a.CreatedAt = now
 	a.UpdatedAt = now
@@ -114,7 +113,7 @@ func (r *mongoRepository) CreateAssignment(ctx context.Context, a *models.Assign
 }
 
 func (r *mongoRepository) GetAssignmentByID(ctx context.Context, id string) (*models.Assignment, error) {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, ErrNotFound
 	}
@@ -142,7 +141,7 @@ func (r *mongoRepository) ListAssignmentsByClassID(ctx context.Context, classID 
 }
 
 func (r *mongoRepository) UpdateAssignment(ctx context.Context, id string, update bson.M) error {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return ErrNotFound
 	}
@@ -159,7 +158,7 @@ func (r *mongoRepository) UpdateAssignment(ctx context.Context, id string, updat
 }
 
 func (r *mongoRepository) DeleteAssignment(ctx context.Context, id string) error {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return ErrNotFound
 	}
@@ -177,7 +176,7 @@ func (r *mongoRepository) DeleteAssignment(ctx context.Context, id string) error
 // ── Submission methods ────────────────────────────────────────────────────────
 
 func (r *mongoRepository) CreateSubmission(ctx context.Context, s *models.Submission) error {
-	s.ID = primitive.NewObjectID()
+	s.ID = bson.NewObjectID()
 	now := time.Now().UTC()
 	s.CreatedAt = now
 	s.UpdatedAt = now
@@ -190,7 +189,7 @@ func (r *mongoRepository) CreateSubmission(ctx context.Context, s *models.Submis
 }
 
 func (r *mongoRepository) GetSubmissionByID(ctx context.Context, id string) (*models.Submission, error) {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, ErrNotFound
 	}
@@ -230,7 +229,7 @@ func (r *mongoRepository) ListSubmissionsByAssignment(ctx context.Context, assig
 }
 
 func (r *mongoRepository) UpdateSubmission(ctx context.Context, id string, update bson.M) error {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return ErrNotFound
 	}

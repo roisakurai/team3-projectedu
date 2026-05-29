@@ -5,10 +5,13 @@ import (
 	"os"
 
 	"phase3/finalproject/material_service-melvin/config"
+	_ "phase3/finalproject/material_service-melvin/docs"
 	"phase3/finalproject/material_service-melvin/routes"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -21,6 +24,9 @@ func main() {
 	config.ConnectDB()
 
 	r := gin.Default()
+
+	// Swagger docs
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	routes.SetupRoutes(r)
 

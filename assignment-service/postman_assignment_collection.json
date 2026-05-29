@@ -1,0 +1,90 @@
+{
+  "info": {
+    "name": "Assignment Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "assignment-service-collection"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8083" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "List Assignments",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/assignments?class_id={{class_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api","v1","assignments"],
+          "query": [ { "key": "class_id", "value": "" } ]
+        }
+      }
+    },
+    {
+      "name": "Get Assignment",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{base_url}}/api/v1/assignments/:id", "host": ["{{base_url}}"], "path": ["api","v1","assignments",":id"] }
+      }
+    },
+    {
+      "name": "Create Assignment",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"class_id\": \"<classId>\",\n  \"title\": \"Example Assignment\",\n  \"description\": \"Description here\",\n  \"deadline\": \"2026-12-31T23:59:59Z\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/v1/assignments", "host": ["{{base_url}}"], "path": ["api","v1","assignments"] }
+      }
+    },
+    {
+      "name": "Update Assignment",
+      "request": {
+        "method": "PUT",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"title\": \"Updated title\",\n  \"description\": \"Updated description\",\n  \"deadline\": \"2026-12-31T23:59:59Z\"\n}" },
+        "url": { "raw": "{{base_url}}/api/v1/assignments/:id", "host": ["{{base_url}}"], "path": ["api","v1","assignments",":id"] }
+      }
+    },
+    {
+      "name": "Delete Assignment",
+      "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{base_url}}/api/v1/assignments/:id", "host": ["{{base_url}}"], "path": ["api","v1","assignments",":id"] } }
+    },
+    {
+      "name": "List Submissions",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{base_url}}/api/v1/assignments/:id/submissions", "host": ["{{base_url}}"], "path": ["api","v1","assignments",":id","submissions"] } }
+    },
+    {
+      "name": "Grade Submission",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"grade\": 85.5\n}" },
+        "url": { "raw": "{{base_url}}/api/v1/assignments/:id/grade/:submission_id", "host": ["{{base_url}}"], "path": ["api","v1","assignments",":id","grade",":submission_id"] }
+      }
+    },
+    {
+      "name": "Submit Assignment",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"file_url\": \"https://example.com/mywork.pdf\",\n  \"content\": \"(optional text)\"\n}" },
+        "url": { "raw": "{{base_url}}/api/v1/assignments/:id/submit", "host": ["{{base_url}}"], "path": ["api","v1","assignments",":id","submit"] }
+      }
+    },
+    {
+      "name": "Get My Submission",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{base_url}}/api/v1/assignments/:id/my-submission", "host": ["{{base_url}}"], "path": ["api","v1","assignments",":id","my-submission"] } }
+    }
+  ]
+}

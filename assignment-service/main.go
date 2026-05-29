@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"assignment-service/config"
+	_ "assignment-service/docs"
 	"assignment-service/handlers"
 	appMiddleware "assignment-service/middleware"
 	"assignment-service/pkg/redis"
@@ -18,8 +19,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	echoSwagger "github.com/swaggo/echo-swagger"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 func main() {
@@ -29,7 +31,7 @@ func main() {
 	mongoCtx, mongoCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer mongoCancel()
 
-	mongoClient, err := mongo.Connect(mongoCtx, options.Client().ApplyURI(cfg.MongoURI))
+	mongoClient, err := mongo.Connect(options.Client().ApplyURI(cfg.MongoURI))
 	if err != nil {
 		log.Fatalf("failed to connect to MongoDB: %v", err)
 	}
@@ -80,6 +82,9 @@ func main() {
 	e.GET("/health", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]string{"status": "ok"})
 	})
+
+	// Swagger docs
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	// All assignment routes require a valid JWT
 	api := e.Group("/api/v1/assignments", appMiddleware.JWTMiddleware(cfg.JWTSecret))
