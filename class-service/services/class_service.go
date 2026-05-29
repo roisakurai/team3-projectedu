@@ -25,6 +25,8 @@ func CreateClass(class models.Class) error {
 	class.JoinCode = GenerateJoinCode()
 	class.CreatedAt = time.Now()
 
+	class.Students = []models.Student{}
+
 	return repositories.CreateClass(class)
 }
 
