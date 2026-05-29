@@ -1,0 +1,138 @@
+basePath: /
+definitions:
+  models.Class:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      join_code:
+        type: string
+      name:
+        type: string
+      students:
+        items:
+          $ref: '#/definitions/models.Student'
+        type: array
+      teacher_id:
+        type: string
+    type: object
+  models.JoinClassRequest:
+    properties:
+      join_code:
+        type: string
+    type: object
+  models.Student:
+    properties:
+      joined_at:
+        type: string
+      student_id:
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: API for managing classes
+  title: Class Service API
+  version: "1.0"
+paths:
+  /classes:
+    get:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all classes
+      tags:
+      - Classes
+    post:
+      consumes:
+      - application/json
+      description: Teacher creates class
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Class Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Class'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create class
+      tags:
+      - Classes
+  /classes/{id}/students:
+    get:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Class ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get students by class
+      tags:
+      - Classes
+  /classes/join:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Join Class
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.JoinClassRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Student join class
+      tags:
+      - Classes
+swagger: "2.0"

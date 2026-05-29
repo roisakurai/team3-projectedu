@@ -1,0 +1,275 @@
+definitions:
+  models.CreateAssignmentRequest:
+    properties:
+      class_id:
+        type: string
+      deadline:
+        type: string
+      description:
+        type: string
+      file_url:
+        type: string
+      title:
+        type: string
+    type: object
+  models.GradeSubmissionRequest:
+    properties:
+      grade:
+        type: number
+    type: object
+  models.SubmitAssignmentRequest:
+    properties:
+      content:
+        type: string
+      file_url:
+        type: string
+    type: object
+  models.UpdateAssignmentRequest:
+    properties:
+      deadline:
+        type: string
+      description:
+        type: string
+      file_url:
+        type: string
+      title:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /assignments:
+    get:
+      parameters:
+      - description: Class ID
+        in: query
+        name: class_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get assignments by class
+      tags:
+      - Assignments
+    post:
+      consumes:
+      - application/json
+      description: Teacher creates assignment
+      parameters:
+      - description: Create Assignment
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateAssignmentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create assignment
+      tags:
+      - Assignments
+  /assignments/{id}:
+    delete:
+      parameters:
+      - description: Assignment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete assignment
+      tags:
+      - Assignments
+    get:
+      parameters:
+      - description: Assignment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get assignment by ID
+      tags:
+      - Assignments
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Assignment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update Assignment
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateAssignmentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update assignment
+      tags:
+      - Assignments
+  /assignments/{id}/grade/{submission_id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Assignment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Submission ID
+        in: path
+        name: submission_id
+        required: true
+        type: string
+      - description: Grade Submission
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.GradeSubmissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Grade submission
+      tags:
+      - Submissions
+  /assignments/{id}/my-submission:
+    get:
+      parameters:
+      - description: Assignment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get my submission
+      tags:
+      - Submissions
+  /assignments/{id}/submissions:
+    get:
+      parameters:
+      - description: Assignment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all submissions
+      tags:
+      - Submissions
+  /assignments/{id}/submit:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Assignment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Submit Assignment
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SubmitAssignmentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Submit assignment
+      tags:
+      - Submissions
+swagger: "2.0"

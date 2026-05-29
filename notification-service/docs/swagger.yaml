@@ -1,0 +1,96 @@
+definitions:
+  models.CreateNotificationRequest:
+    properties:
+      message:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      user_ids:
+        items:
+          type: string
+        type: array
+    type: object
+info:
+  contact: {}
+paths:
+  /notifications:
+    post:
+      consumes:
+      - application/json
+      description: Create new notification
+      parameters:
+      - description: Notification Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateNotificationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create notification
+      tags:
+      - Notifications
+  /notifications/{id}/read:
+    patch:
+      description: Update notification status to read
+      parameters:
+      - description: Notification ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Mark notification as read
+      tags:
+      - Notifications
+  /notifications/user/{user_id}:
+    get:
+      description: Retrieve all notifications for a user
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get notifications by user ID
+      tags:
+      - Notifications
+swagger: "2.0"
