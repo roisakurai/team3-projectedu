@@ -75,17 +75,30 @@ func JoinClass(classID string, student models.Student) error {
 		return err
 	}
 
-	_, err = collection.UpdateOne(
+	// add student to students array only if not exists
+	res, err := collection.UpdateOne(
 		context.Background(),
+		bson.M{"_id": objectID},
 		bson.M{
-			"_id": objectID,
-		},
-		bson.M{
-			"$push": bson.M{
-				"students": student,
-			},
+			"$addToSet": bson.M{"students": student},
 		},
 	)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	// if the student was actually added, increment student_count
+	if res.ModifiedCount > 0 {
+		_, err = collection.UpdateOne(
+			context.Background(),
+			bson.M{"_id": objectID},
+			bson.M{"$inc": bson.M{"student_count": 1}},
+		)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

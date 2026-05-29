@@ -22,6 +22,9 @@ func JWTMiddleware() gin.HandlerFunc {
 
 		tokenString = tokenString[len("Bearer "):]
 
+		// keep raw token so handlers can forward it to other services
+		c.Set("raw_token", tokenString)
+
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("JWT_SECRET")), nil
 		})

@@ -12,13 +12,15 @@ type Student struct {
 }
 
 type Class struct {
-	ID          primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Name        string             `json:"name" bson:"name"`
-	Description string             `json:"description" bson:"description"`
-	TeacherID   string             `json:"teacher_id" bson:"teacher_id"`
-	JoinCode    string             `json:"join_code" bson:"join_code"`
-	Students    []Student          `json:"students" bson:"students"`
-	CreatedAt   time.Time          `json:"created_at" bson:"created_at"`
+	ID           primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	Name         string             `json:"name" bson:"name"`
+	Description  string             `json:"description" bson:"description"`
+	TeacherID    string             `json:"teacher_id" bson:"teacher_id"`
+	TeacherName  string             `json:"teacher_name,omitempty" bson:"teacher_name,omitempty"`
+	JoinCode     string             `json:"join_code" bson:"join_code"`
+	Students     []Student          `json:"students" bson:"students"`
+	StudentCount int                `json:"student_count" bson:"student_count"`
+	CreatedAt    time.Time          `json:"created_at" bson:"created_at"`
 }
 
 type JoinClassRequest struct {
